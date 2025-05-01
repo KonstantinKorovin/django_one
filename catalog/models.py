@@ -29,7 +29,6 @@ class Product(models.Model):
     name = models.CharField(
         max_length=50,
         verbose_name="Название продукта",
-        help_text="Введите название продукта",
     )
     description = models.TextField(verbose_name="Описание продукта")
     image = models.ImageField(
@@ -37,7 +36,6 @@ class Product(models.Model):
         blank=True,
         null=True,
         verbose_name="Фото продукта",
-        help_text="Загрузите фото продукта",
     )
     category = models.ForeignKey(
         Category,
@@ -48,7 +46,7 @@ class Product(models.Model):
         related_name="names",
     )
     price = models.IntegerField(
-        verbose_name="Цена продукта", help_text="Введите цену продукта"
+        verbose_name="Цена продукта"
     )
     created_at = models.DateTimeField(
         null=True, blank=True, verbose_name="Дата создания"
