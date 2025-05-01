@@ -14,15 +14,43 @@ class Command(BaseCommand):
         category2, _ = Category.objects.get_or_create(name="Овощи")
 
         db_products = [
-            {"name": "Яблоко", "description": "Описание1", "image": "яблоко.png", "category": category1, "price": 150},
-            {"name": "Ананас", "description": "Описание2", "image": "ананас.png", "category": category1, "price": 160},
-            {"name": "Помидор", "description": "Описание3", "image": "помидор.png", "category": category2, "price": 130},
-            {"name": "Огурец", "description": "Описание4", "image": "огурец.png", "category": category2, "price": 140},
+            {
+                "name": "Яблоко",
+                "description": "Описание1",
+                "image": "/media/products/photo/яблоко.png",
+                "category": category1,
+                "price": 150,
+            },
+            {
+                "name": "Ананас",
+                "description": "Описание2",
+                "image": "/media/products/photo/ананас.png",
+                "category": category1,
+                "price": 160,
+            },
+            {
+                "name": "Помидор",
+                "description": "Описание3",
+                "image": "/media/products/photo/помидор.png",
+                "category": category2,
+                "price": 130,
+            },
+            {
+                "name": "Огурец",
+                "description": "Описание4",
+                "image": "/media/products/photo/огурец.png",
+                "category": category2,
+                "price": 140,
+            },
         ]
 
         for product in db_products:
             product, created = Product.objects.get_or_create(**product)
             if created:
-                self.stdout.write(self.style.SUCCESS(f"Успешное создание продукта: {product.name}"))
+                self.stdout.write(
+                    self.style.SUCCESS(f"Успешное создание продукта: {product.name}")
+                )
             else:
-                self.stdout.write(self.style.WARNING(f"Продукт: {product.name} не был создан!"))
+                self.stdout.write(
+                    self.style.WARNING(f"Продукт: {product.name} не был создан!")
+                )

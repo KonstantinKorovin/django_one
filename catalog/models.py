@@ -19,6 +19,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 # Create your models here.
 class Product(models.Model):
     """
@@ -50,10 +51,15 @@ class Product(models.Model):
         verbose_name="Цена продукта", help_text="Введите цену продукта"
     )
     created_at = models.DateTimeField(
-        blank=True, null=True, verbose_name="Дата изготовления"
+        null=True, blank=True, verbose_name="Дата создания"
     )
     updated_at = models.DateTimeField(
-        blank=True, null=True, verbose_name="Дата обновления"
+        null=True, blank=True, verbose_name="Дата обновления"
+    )
+    views_counter = models.PositiveIntegerField(
+        verbose_name="Счетчик просмотров",
+        help_text="Укажите количество просмотров",
+        default=0,
     )
 
     class Meta:
