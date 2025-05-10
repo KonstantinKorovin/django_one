@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
@@ -6,16 +7,21 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
     ListView,
+    View
 )
 
+from blog.forms import BlogForm
 from blog.models import BlogModel
 
 
 # Create your views here.
-def home(request):
-    if request.method == "GET":
-        return render(request, "home_blog.html")
-    return "Данные отправлены на сервер"
+class HomeView(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, "blogs/includes/home_blog.html")
+
+    def post(self, request, *args, **kwargs):
+        return HttpResponse("Данные отправлены на сервер")
 
 
 class BlogListView(ListView):
@@ -39,28 +45,14 @@ class BlogDetailView(DetailView):
 
 class BlogCreateView(CreateView):
     model = BlogModel
-    fields = (
-        "header",
-        "description",
-        "preview",
-        "created_at",
-        "is_publication",
-        "views_count",
-    )
+    form_class = BlogForm
     template_name = "blogs/blog_create.html"
     success_url = reverse_lazy("blog:blog_list")
 
 
 class BlogUpdateView(UpdateView):
     model = BlogModel
-    fields = (
-        "header",
-        "description",
-        "preview",
-        "created_at",
-        "is_publication",
-        "views_count",
-    )
+    form_class = BlogForm
     template_name = "blogs/blog_create.html"
     success_url = reverse_lazy("blog:blog_list")
 
