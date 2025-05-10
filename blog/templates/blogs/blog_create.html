@@ -1,0 +1,18 @@
+{% extends 'blogs/base.html' %}
+
+{% block content %}
+<form class="row" method="post">
+  <div class="mb-3" >
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-sm btn-outline-secondary">
+          {% if object %}
+              Сохранить
+          {% else %}
+              Создать
+          {% endif %}
+      </button>
+      <a class="btn btn-sm btn-outline-secondary" href="{% url 'blog:blog_list' %}" role="button">Назад</a>
+  </div>
+</form>
+{% endblock %}
