@@ -8,7 +8,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
     ListView,
-    View
+    View,
 )
 
 from blog.forms import BlogForm

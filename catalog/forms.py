@@ -20,7 +20,7 @@ RADAR = "радар"
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ("name", "description", "image", "category", "price")
+        fields = ("name", "description", "image", "category", "price", "is_publication")
         exclude = ("created_at", "updated_at", "views_counter")
 
     def __init__(self, *args, **kwargs):
@@ -49,10 +49,7 @@ class ProductForm(forms.ModelForm):
             }
         )
         self.fields["price"].widget.attrs.update(
-            {
-                "class": "form-control",
-                "placeholder": "Укажите цену продукта"
-            }
+            {"class": "form-control", "placeholder": "Укажите цену продукта"}
         )
 
     def clean_price(self):

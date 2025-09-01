@@ -3,6 +3,7 @@ from catalog.models import Product, Category
 
 
 class Command(BaseCommand):
+
     help = "Add Products and Categories in database"
 
     def handle(self, *args, **options):

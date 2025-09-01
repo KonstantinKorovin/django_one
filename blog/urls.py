@@ -6,7 +6,8 @@ from blog.views import (
     BlogDetailView,
     BlogCreateView,
     BlogUpdateView,
-    BlogDeleteView, HomeView,
+    BlogDeleteView,
+    HomeView,
 )
 
 app_name = BlogConfig.name
