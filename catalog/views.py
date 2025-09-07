@@ -1,7 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponse, HttpResponseForbidden
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
+from django.core.cache import cache
 from django.views.generic import (
     ListView,
     DetailView,
@@ -10,11 +11,11 @@ from django.views.generic import (
     DeleteView,
 )
 
-from catalog.models import Product
+from catalog.models import Product, Category
 from catalog.forms import ProductForm
+from catalog.services import CatalogService
 
 
-# Create your views here.
 def home(request):
     if request.method == "GET":
         return render(request, "home_blog.html")
@@ -30,16 +31,33 @@ def contacts(request):
 class ProductListView(ListView):
     model = Product
     template_name = "products/product_list.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        queryset = cache.get("products")
+
+        if not queryset:
+            queryset = super().get_queryset()
+            cache.set("products", queryset, 60*15)
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.objects.all()
+        return context
 
 
 class ProductDetailView(DetailView):
     model = Product
     template_name = "products/product_detail.html"
+    context_object_name = "product"
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset=queryset)
         self.object.views_counter += 1
         self.object.save()
+        cache.delete(f"product_{self.object.id}")
+        cache.set(f"product_{self.object.id}", self.object, timeout=900)
         return self.object
 
 
@@ -51,6 +69,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        cache.delete("products")
         return super().form_valid(form)
 
 
@@ -71,9 +90,7 @@ class ProductUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView)
         return context
 
     def form_valid(self, form):
-        product = self.get_object()
-        if self.request.user != product.owner or not self.request.user.has_perm("can_unpublish_product"):
-            return HttpResponseForbidden("У вас недостаточно прав для редактирования продукта.")
+        cache.delete("products")
         return super().form_valid(form)
 
 
@@ -90,7 +107,24 @@ class ProductDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView)
         return context
 
     def form_valid(self, form):
-        product = self.get_object()
-        if self.request.user != product.owner or not self.request.user.has_perm("can_remove_product"):
-            return HttpResponseForbidden("У вас недостаточно прав для удаления продукта.")
+        cache.delete("products")
         return super().form_valid(form)
+
+
+class ProductByCategoryListView(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = "products/product_by_category.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        category_id = self.kwargs.get("pk")
+        queryset = CatalogService.list_products(category_id)
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        category_id = self.kwargs.get("pk")
+        if category_id:
+            context['category'] = get_object_or_404(Category, pk=category_id)
+        return context

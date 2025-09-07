@@ -14,6 +14,7 @@
               <p class="card-text">Стоимость: {{ object.price }}</p>
               <p class="card-text">Статус публикации: {{ object.is_publication }}</p>
               <p class="card-text">Владелец: {{ object.owner }}</p>
+              <p class="card-text">Количество просмотров: {{object.views_counter}}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
                   <a class="btn btn-primary" href="{% url 'catalog:product_list' %}" role="button">Назад</a>
